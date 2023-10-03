@@ -1,10 +1,10 @@
 import { make_component, Component } from "@nikonov-alex/components";
 
 
-type Option = { value: string, label: string };
+type Option = { label: string, value?: string, class?: string };
 
-const make_option = ( value: string, label: string ): Option =>
-    ( { value, label } )
+const make_option = ( label: string, value?: string, className?: string ): Option =>
+    ( { label, value, class: className } )
 
 
 
@@ -135,7 +135,8 @@ const update_state = <S extends State>( state: S, data: Partial<{ [K in keyof S]
 
 const Option = ( props: Option & { index: number, selected?: boolean } ): HTMLElement =>
     <li className={ "na-dropdown-option" +
-        (props.selected ? " selected" : "")
+        (props.selected ? " selected" : "") +
+        (props.class ? ` ${props.class}` : "")
     } data-index={ props.index }>{ props.label }</li> as HTMLElement;
 
 const OptionsList = ( props: { options: Option[], selectedIndex: number } ) =>
@@ -247,11 +248,11 @@ const triggerEvent = ( oldState: State, newState: State ): Event | null =>
     SN.OPTIONS_EMPTY === oldState.name
         ? SN.OPTIONS_EMPTY === newState.name
             ? null
-            : make_changed_event( newState.value.value )
+            : make_changed_event( newState.value.value ?? null )
         : SN.OPTIONS_EMPTY === newState.name
             ? make_changed_event( null )
             : value_index( oldState ) !== value_index( newState )
-                ? make_changed_event( newState.value.value )
+                ? make_changed_event( newState.value.value ?? null )
                 : null;
 
 
