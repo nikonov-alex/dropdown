@@ -248,11 +248,11 @@ const triggerEvent = ( oldState: State, newState: State ): Event | null =>
     SN.OPTIONS_EMPTY === oldState.name
         ? SN.OPTIONS_EMPTY === newState.name
             ? null
-            : make_changed_event( newState.value.value ?? null )
+            : make_changed_event( newState.value.value ?? newState.value.label )
         : SN.OPTIONS_EMPTY === newState.name
             ? make_changed_event( null )
             : value_index( oldState ) !== value_index( newState )
-                ? make_changed_event( newState.value.value ?? null )
+                ? make_changed_event( newState.value.value ?? newState.value.label )
                 : null;
 
 

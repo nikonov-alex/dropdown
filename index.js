@@ -4,8 +4,8 @@ exports.make_option = exports.Option = exports.dropdown = void 0;
 var tslib_1 = require("tslib");
 var jsx_runtime_1 = require("jsx-dom/jsx-runtime");
 var components_1 = require("@nikonov-alex/components");
-var make_option = function (value, label) {
-    return ({ value: value, label: label });
+var make_option = function (label, value, className) {
+    return ({ label: label, value: value, class: className });
 };
 exports.make_option = make_option;
 var SN;
@@ -87,7 +87,8 @@ var update_state = function (state, data) {
 };
 var Option = function (props) {
     return (0, jsx_runtime_1.jsx)("li", { className: "na-dropdown-option" +
-            (props.selected ? " selected" : ""), "data-index": props.index, children: props.label });
+            (props.selected ? " selected" : "") +
+            (props.class ? " ".concat(props.class) : ""), "data-index": props.index, children: props.label });
 };
 exports.Option = Option;
 var OptionsList = function (props) {
@@ -180,14 +181,15 @@ var make_changed_event = function (value) {
     });
 };
 var triggerEvent = function (oldState, newState) {
+    var _a, _b;
     return SN.OPTIONS_EMPTY === oldState.name
         ? SN.OPTIONS_EMPTY === newState.name
             ? null
-            : make_changed_event(newState.value.value)
+            : make_changed_event((_a = newState.value.value) !== null && _a !== void 0 ? _a : newState.value.label)
         : SN.OPTIONS_EMPTY === newState.name
             ? make_changed_event(null)
             : value_index(oldState) !== value_index(newState)
-                ? make_changed_event(newState.value.value)
+                ? make_changed_event((_b = newState.value.value) !== null && _b !== void 0 ? _b : newState.value.label)
                 : null;
 };
 var replaceOptionalParams = function (state, opts) {
