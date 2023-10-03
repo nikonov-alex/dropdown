@@ -281,7 +281,7 @@ const updateOptions = ( state: State, opts: Partial<RequiredParams & OptionalPar
         ? opts.options && opts.options.length !== 0
             ? make_closed_state( SN.INACTIVE, {
                 //@ts-ignore
-                ... replaceOptions( state, opts ),
+                ... replaceOptions( opts ),
                 ... replaceOptionalParams( state, opts )
             } )
             : update_state( state,
@@ -294,7 +294,7 @@ const updateOptions = ( state: State, opts: Partial<RequiredParams & OptionalPar
                 : update_state( state, {
                     ... state,
                     //@ts-ignore
-                    ... replaceOptions( state, opts ),
+                    ... replaceOptions( opts ),
                     ... replaceOptionalParams( state, opts )
                 } )
             : update_state( state, {

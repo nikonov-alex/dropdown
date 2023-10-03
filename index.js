@@ -207,13 +207,13 @@ var replaceOptions = function (opts) {
 var updateOptions = function (state, opts) {
     return SN.OPTIONS_EMPTY === state.name
         ? opts.options && opts.options.length !== 0
-            ? make_closed_state(SN.INACTIVE, tslib_1.__assign(tslib_1.__assign({}, replaceOptions(state, opts)), replaceOptionalParams(state, opts)))
+            ? make_closed_state(SN.INACTIVE, tslib_1.__assign(tslib_1.__assign({}, replaceOptions(opts)), replaceOptionalParams(state, opts)))
             : update_state(state, replaceOptionalParams(state, opts))
         // ALL OTHER STATES
         : opts.options
             ? 0 === opts.options.length
                 ? make_options_empty_state(replaceOptionalParams(state, opts))
-                : update_state(state, tslib_1.__assign(tslib_1.__assign(tslib_1.__assign({}, state), replaceOptions(state, opts)), replaceOptionalParams(state, opts)))
+                : update_state(state, tslib_1.__assign(tslib_1.__assign(tslib_1.__assign({}, state), replaceOptions(opts)), replaceOptionalParams(state, opts)))
             : update_state(state, tslib_1.__assign(tslib_1.__assign({}, state), replaceOptionalParams(state, opts)));
 };
 var dropdown = function (opts) {
