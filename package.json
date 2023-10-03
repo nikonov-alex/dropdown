@@ -1,0 +1,27 @@
+{
+  "name": "@nikonov-alex/dropdown",
+  "version": "0.0.1",
+  "description": "Dropdown based on @nikonov-alex/components library",
+  "main": "index.js",
+  "types": "index.tsx",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nikonov-alex/dropdown.git"
+  },
+  "author": "Aleksander Nikonov <nikonov.personal.mail@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nikonov-alex/components/issues"
+  },
+  "homepage": "https://github.com/nikonov-alex/components#readme",
+  "devDependencies": {
+    "tslib": "^2.6.2"
+  },
+  "dependencies": {
+    "@nikonov-alex/components": "^0.0.17",
+    "jsx-dom": "^8.0.7"
+  }
+}

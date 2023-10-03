@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "target": "es5",
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "jsx-dom",
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "baseUrl": "./"
+  },
+  "files": [ "./index.tsx" ]
+}
