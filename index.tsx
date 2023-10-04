@@ -238,8 +238,8 @@ const maybeChangeCurrent = ( state: State, event: Event ): State =>
     : change_current( state, option_index( event.target as HTMLElement ) );
 
 
-const make_changed_event = ( value: string | null ): CustomEvent<{ value: string | null }> =>
-    new CustomEvent( "dropdown-value-changed", {
+const make_changed_event = ( id: string | undefined, value: string | null ): CustomEvent<{ value: string | null }> =>
+    new CustomEvent( (id ? `#${id}_` : "") + "dropdown-value-changed", {
         detail: { value },
         bubbles: true
     } );
@@ -248,11 +248,11 @@ const triggerEvent = ( oldState: State, newState: State ): Event | null =>
     SN.OPTIONS_EMPTY === oldState.name
         ? SN.OPTIONS_EMPTY === newState.name
             ? null
-            : make_changed_event( newState.value.value ?? newState.value.label )
+            : make_changed_event( newState.id, newState.value.value ?? newState.value.label )
         : SN.OPTIONS_EMPTY === newState.name
-            ? make_changed_event( null )
+            ? make_changed_event( newState.id, null )
             : value_index( oldState ) !== value_index( newState )
-                ? make_changed_event( newState.value.value ?? newState.value.label )
+                ? make_changed_event( newState.id, newState.value.value ?? newState.value.label )
                 : null;
 
 
@@ -315,7 +315,7 @@ const dropdown = ( opts: RequiredParams & Partial<OptionalParams> ): Dropdown =>
                 class: opts.class
             }
     ), render, {
-        events: {
+        localEvents: {
             blur: maybeLeave,
             click,
             keyup,

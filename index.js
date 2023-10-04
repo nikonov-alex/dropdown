@@ -174,8 +174,8 @@ var maybeChangeCurrent = function (state, event) {
             ? state
             : change_current(state, option_index(event.target));
 };
-var make_changed_event = function (value) {
-    return new CustomEvent("dropdown-value-changed", {
+var make_changed_event = function (id, value) {
+    return new CustomEvent((id ? "#".concat(id, "_") : "") + "dropdown-value-changed", {
         detail: { value: value },
         bubbles: true
     });
@@ -185,11 +185,11 @@ var triggerEvent = function (oldState, newState) {
     return SN.OPTIONS_EMPTY === oldState.name
         ? SN.OPTIONS_EMPTY === newState.name
             ? null
-            : make_changed_event((_a = newState.value.value) !== null && _a !== void 0 ? _a : newState.value.label)
+            : make_changed_event(newState.id, (_a = newState.value.value) !== null && _a !== void 0 ? _a : newState.value.label)
         : SN.OPTIONS_EMPTY === newState.name
-            ? make_changed_event(null)
+            ? make_changed_event(newState.id, null)
             : value_index(oldState) !== value_index(newState)
-                ? make_changed_event((_b = newState.value.value) !== null && _b !== void 0 ? _b : newState.value.label)
+                ? make_changed_event(newState.id, (_b = newState.value.value) !== null && _b !== void 0 ? _b : newState.value.label)
                 : null;
 };
 var replaceOptionalParams = function (state, opts) {
@@ -228,7 +228,7 @@ var dropdown = function (opts) {
             id: opts.id,
             class: opts.class
         }), render, {
-        events: {
+        localEvents: {
             blur: maybeLeave,
             click: click,
             keyup: keyup,
