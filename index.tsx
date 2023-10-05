@@ -238,22 +238,23 @@ const maybeChangeCurrent = ( state: State, event: Event ): State =>
     : change_current( state, option_index( event.target as HTMLElement ) );
 
 
-const make_changed_event = ( id: string | undefined, value: string | null ): CustomEvent<{ value: string | null }> =>
-    new CustomEvent( (id ? `#${id}_` : "") + "dropdown-value-changed", {
-        detail: { value },
+const make_changed_event = ( global: boolean, id: string | undefined, value: string | null ): CustomEvent<{ value: string | null }> =>
+    new CustomEvent( (global && id ? `#${id}_` : "") + "dropdown-value-changed", {
+        detail: { id, value },
         bubbles: true
     } );
 
-const triggerEvent = ( oldState: State, newState: State ): Event | null =>
-    SN.OPTIONS_EMPTY === oldState.name
-        ? SN.OPTIONS_EMPTY === newState.name
-            ? null
-            : make_changed_event( newState.id, newState.value.value ?? newState.value.label )
-        : SN.OPTIONS_EMPTY === newState.name
-            ? make_changed_event( newState.id, null )
-            : value_index( oldState ) !== value_index( newState )
-                ? make_changed_event( newState.id, newState.value.value ?? newState.value.label )
-                : null;
+const make_event_function = ( global: boolean ) =>
+    ( oldState: State, newState: State ) =>
+        SN.OPTIONS_EMPTY === oldState.name
+            ? SN.OPTIONS_EMPTY === newState.name
+                ? null
+                : make_changed_event( global, newState.id, newState.value.value ?? newState.value.label )
+            : SN.OPTIONS_EMPTY === newState.name
+                ? make_changed_event( global, newState.id, null )
+                : value_index( oldState ) !== value_index( newState )
+                    ? make_changed_event( global, newState.id, newState.value.value ?? newState.value.label )
+                    : null;
 
 
 
@@ -323,7 +324,8 @@ const dropdown = ( opts: RequiredParams & Partial<OptionalParams> ): Dropdown =>
             mouseover: maybeChangeCurrent
         },
         updateOptions,
-        triggerEvent
+        triggerGlobalEvent: make_event_function( true ),
+        triggerLocalEvent: make_event_function( false )
     } );
 
 

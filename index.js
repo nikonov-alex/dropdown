@@ -174,23 +174,25 @@ var maybeChangeCurrent = function (state, event) {
             ? state
             : change_current(state, option_index(event.target));
 };
-var make_changed_event = function (id, value) {
-    return new CustomEvent((id ? "#".concat(id, "_") : "") + "dropdown-value-changed", {
-        detail: { value: value },
+var make_changed_event = function (global, id, value) {
+    return new CustomEvent((global && id ? "#".concat(id, "_") : "") + "dropdown-value-changed", {
+        detail: { id: id, value: value },
         bubbles: true
     });
 };
-var triggerEvent = function (oldState, newState) {
-    var _a, _b;
-    return SN.OPTIONS_EMPTY === oldState.name
-        ? SN.OPTIONS_EMPTY === newState.name
-            ? null
-            : make_changed_event(newState.id, (_a = newState.value.value) !== null && _a !== void 0 ? _a : newState.value.label)
-        : SN.OPTIONS_EMPTY === newState.name
-            ? make_changed_event(newState.id, null)
-            : value_index(oldState) !== value_index(newState)
-                ? make_changed_event(newState.id, (_b = newState.value.value) !== null && _b !== void 0 ? _b : newState.value.label)
-                : null;
+var make_event_function = function (global) {
+    return function (oldState, newState) {
+        var _a, _b;
+        return SN.OPTIONS_EMPTY === oldState.name
+            ? SN.OPTIONS_EMPTY === newState.name
+                ? null
+                : make_changed_event(global, newState.id, (_a = newState.value.value) !== null && _a !== void 0 ? _a : newState.value.label)
+            : SN.OPTIONS_EMPTY === newState.name
+                ? make_changed_event(global, newState.id, null)
+                : value_index(oldState) !== value_index(newState)
+                    ? make_changed_event(global, newState.id, (_b = newState.value.value) !== null && _b !== void 0 ? _b : newState.value.label)
+                    : null;
+    };
 };
 var replaceOptionalParams = function (state, opts) {
     var _a, _b;
@@ -236,7 +238,8 @@ var dropdown = function (opts) {
             mouseover: maybeChangeCurrent
         },
         updateOptions: updateOptions,
-        triggerEvent: triggerEvent
+        triggerGlobalEvent: make_event_function(true),
+        triggerLocalEvent: make_event_function(false)
     });
 };
 exports.dropdown = dropdown;
