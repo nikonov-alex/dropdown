@@ -259,10 +259,11 @@ const make_event_function = ( global: boolean ) =>
 
 
 
-type Dropdown = Component<State>;
-
 type RequiredParams = { options: Option[] };
 type OptionalParams = { id: string, class: string };
+type Options = Partial<RequiredParams & OptionalParams>;
+
+type Dropdown = Component<State, Options>;
 
 
 const replaceOptionalParams = ( state: State, opts: Partial<OptionalParams> ): Partial<OptionalParams> =>
@@ -278,7 +279,7 @@ const replaceOptions = ( opts: RequiredParams ): OptionsData =>
         rightOptions: opts.options.slice( 1 )
     } )
 
-const updateOptions = ( state: State, opts: Partial<RequiredParams & OptionalParams> ): State =>
+const updateOptions = ( state: State, opts: Options ): State =>
     SN.OPTIONS_EMPTY === state.name
         ? opts.options && opts.options.length !== 0
             ? make_closed_state( SN.INACTIVE, {
@@ -305,7 +306,7 @@ const updateOptions = ( state: State, opts: Partial<RequiredParams & OptionalPar
             } );
 
 const dropdown = ( opts: RequiredParams & Partial<OptionalParams> ): Dropdown =>
-    make_component<State>(
+    make_component<State, Options>(
         0 === opts.options.length
             ? make_options_empty_state( { id: opts.id, class: opts.class } )
             : make_closed_state( SN.INACTIVE, {
