@@ -246,7 +246,9 @@ const make_changed_event = ( global: boolean, id: string | undefined, value: str
 
 const make_event_function = ( global: boolean ) =>
     ( oldState: State, newState: State ) =>
-        SN.OPTIONS_EMPTY === oldState.name
+        SN.OPENED === newState.name
+            ? null
+        : SN.OPTIONS_EMPTY === oldState.name
             ? SN.OPTIONS_EMPTY === newState.name
                 ? null
                 : make_changed_event( global, newState.id, newState.value.value ?? newState.value.label )

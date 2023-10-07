@@ -183,15 +183,17 @@ var make_changed_event = function (global, id, value) {
 var make_event_function = function (global) {
     return function (oldState, newState) {
         var _a, _b;
-        return SN.OPTIONS_EMPTY === oldState.name
-            ? SN.OPTIONS_EMPTY === newState.name
-                ? null
-                : make_changed_event(global, newState.id, (_a = newState.value.value) !== null && _a !== void 0 ? _a : newState.value.label)
-            : SN.OPTIONS_EMPTY === newState.name
-                ? make_changed_event(global, newState.id, null)
-                : value_index(oldState) !== value_index(newState)
-                    ? make_changed_event(global, newState.id, (_b = newState.value.value) !== null && _b !== void 0 ? _b : newState.value.label)
-                    : null;
+        return SN.OPENED === newState.name
+            ? null
+            : SN.OPTIONS_EMPTY === oldState.name
+                ? SN.OPTIONS_EMPTY === newState.name
+                    ? null
+                    : make_changed_event(global, newState.id, (_a = newState.value.value) !== null && _a !== void 0 ? _a : newState.value.label)
+                : SN.OPTIONS_EMPTY === newState.name
+                    ? make_changed_event(global, newState.id, null)
+                    : value_index(oldState) !== value_index(newState)
+                        ? make_changed_event(global, newState.id, (_b = newState.value.value) !== null && _b !== void 0 ? _b : newState.value.label)
+                        : null;
     };
 };
 var replaceOptionalParams = function (state, opts) {
