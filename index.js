@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.make_option = exports.Option = exports.dropdown = void 0;
+exports.make_option = exports.Option = exports.make_dropdown = void 0;
 var tslib_1 = require("tslib");
 var jsx_runtime_1 = require("jsx-dom/jsx-runtime");
 var components_1 = require("@nikonov-alex/components");
@@ -220,7 +220,7 @@ var updateOptions = function (state, opts) {
                 : update_state(state, tslib_1.__assign(tslib_1.__assign(tslib_1.__assign({}, state), replaceOptions(opts)), replaceOptionalParams(state, opts)))
             : update_state(state, tslib_1.__assign(tslib_1.__assign({}, state), replaceOptionalParams(state, opts)));
 };
-var dropdown = function (opts) {
+var make_dropdown = function (opts) {
     return (0, components_1.make_component)(0 === opts.options.length
         ? make_options_empty_state({ id: opts.id, class: opts.class })
         : make_closed_state(SN.INACTIVE, {
@@ -242,5 +242,5 @@ var dropdown = function (opts) {
         triggerLocalEvent: make_event_function(false)
     });
 };
-exports.dropdown = dropdown;
+exports.make_dropdown = make_dropdown;
 //# sourceMappingURL=index.js.map

@@ -305,7 +305,7 @@ const updateOptions = ( state: State, opts: Options ): State =>
                 ... replaceOptionalParams( state, opts )
             } );
 
-const dropdown = ( opts: RequiredParams & Partial<OptionalParams> ): Dropdown =>
+const make_dropdown = ( opts: RequiredParams & Partial<OptionalParams> ): Dropdown =>
     make_component<State, Options>(
         0 === opts.options.length
             ? make_options_empty_state( { id: opts.id, class: opts.class } )
@@ -331,4 +331,4 @@ const dropdown = ( opts: RequiredParams & Partial<OptionalParams> ): Dropdown =>
 
 
 
-export { dropdown, Dropdown, Option, make_option };
+export { make_dropdown, Dropdown, Option, make_option };
