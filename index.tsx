@@ -238,7 +238,7 @@ const maybeChangeCurrent = ( state: State, event: Event ): State =>
     : change_current( state, option_index( event.target as HTMLElement ) );
 
 
-const make_changed_event = ( global: boolean, id: string | undefined, value: string | null ): CustomEvent<{ value: string | null }> =>
+const make_changed_event = ( global: boolean, id: string | undefined, value: Option | null ): CustomEvent<{ id?: string, value: Option | null }> =>
     new CustomEvent( (global && id ? `#${id}_` : "") + "dropdown-value-changed", {
         detail: { id, value },
         bubbles: true
@@ -249,11 +249,11 @@ const make_event_function = ( global: boolean ) =>
         SN.OPTIONS_EMPTY === oldState.name
             ? SN.OPTIONS_EMPTY === newState.name
                 ? null
-                : make_changed_event( global, newState.id, newState.value.value ?? newState.value.label )
+                : make_changed_event( global, newState.id, newState.value )
             : SN.OPTIONS_EMPTY === newState.name
                 ? make_changed_event( global, newState.id, null )
                 : value_index( oldState ) !== value_index( newState )
-                    ? make_changed_event( global, newState.id, newState.value.value ?? newState.value.label )
+                    ? make_changed_event( global, newState.id, newState.value )
                     : null;
 
 
