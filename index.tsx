@@ -1,7 +1,7 @@
 import { make_component, Component } from "@nikonov-alex/components";
 
 
-type Option = { label: string, value?: string, class?: string };
+type Option = { label: string, value?: string, class?: string, autoselect?: true };
 
 const make_option = ( label: string, value?: string, className?: string ): Option =>
     ( { label, value, class: className } )
@@ -272,19 +272,12 @@ const replaceOptionalParams = ( state: State, opts: Partial<OptionalParams> ): P
         class: opts.class ?? state.class
     } );
 
-const replaceOptions = ( opts: RequiredParams ): OptionsData =>
-    ( {
-        leftOptions: [],
-        value: opts.options[0],
-        rightOptions: opts.options.slice( 1 )
-    } )
-
 const updateOptions = ( state: State, opts: Options ): State =>
     SN.OPTIONS_EMPTY === state.name
         ? opts.options && opts.options.length !== 0
             ? make_closed_state( SN.INACTIVE, {
                 //@ts-ignore
-                ... replaceOptions( opts ),
+                ... to_options_data( opts.options ),
                 ... replaceOptionalParams( state, opts )
             } )
             : update_state( state,
@@ -297,7 +290,7 @@ const updateOptions = ( state: State, opts: Options ): State =>
                 : update_state( state, {
                     ... state,
                     //@ts-ignore
-                    ... replaceOptions( opts ),
+                    ... to_options_data( opts.options ),
                     ... replaceOptionalParams( state, opts )
                 } )
             : update_state( state, {
@@ -305,28 +298,47 @@ const updateOptions = ( state: State, opts: Options ): State =>
                 ... replaceOptionalParams( state, opts )
             } );
 
-const make_dropdown = ( opts: RequiredParams & Partial<OptionalParams> ): Dropdown =>
-    make_component<State, Options>(
-        0 === opts.options.length
-            ? make_options_empty_state( { id: opts.id, class: opts.class } )
-            : make_closed_state( SN.INACTIVE, {
-                leftOptions: [],
-                value: opts.options[0],
-                rightOptions: opts.options.slice( 1 ),
+
+
+const create_options_data = ( options: Option[], selectedIndex: number ): OptionsData =>
+    ({
+        leftOptions: options.slice( 0, selectedIndex ),
+        value: options[selectedIndex],
+        rightOptions: options.slice( selectedIndex + 1 ),
+    })
+
+const options_find_selected = ( options: Option[] ): number =>
+    options.findIndex( option => true === option.autoselect );
+
+const to_options_data = ( options: Option[] ): OptionsData =>
+    ( selectedIndex =>
+            create_options_data( options, -1 === selectedIndex ? 0 : selectedIndex )
+    )( options_find_selected( options ) );
+
+const make_initial_state = ( opts: RequiredParams & Partial<OptionalParams> ): State =>
+    0 === opts.options.length
+        ? make_options_empty_state( { id: opts.id, class: opts.class } )
+        : make_closed_state( SN.INACTIVE, {
+                ... to_options_data( opts.options ),
                 id: opts.id,
                 class: opts.class
             }
-    ), render, {
-        localEvents: {
-            blur: maybeLeave,
-            click,
-            keyup,
-            keydown,
-            mouseover: maybeChangeCurrent
-        },
-        updateOptions,
-        triggerGlobalEvent: make_event_function( true ),
-        triggerLocalEvent: make_event_function( false )
+        )
+
+const make_dropdown = ( opts: RequiredParams & Partial<OptionalParams> ): Dropdown =>
+    make_component<State, Options>(
+        make_initial_state( opts ),
+        render, {
+            localEvents: {
+                blur: maybeLeave,
+                click,
+                keyup,
+                keydown,
+                mouseover: maybeChangeCurrent
+            },
+            updateOptions,
+            triggerGlobalEvent: make_event_function( true ),
+            triggerLocalEvent: make_event_function( false )
     } );
 
 

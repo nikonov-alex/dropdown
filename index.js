@@ -201,35 +201,40 @@ var replaceOptionalParams = function (state, opts) {
         class: (_b = opts.class) !== null && _b !== void 0 ? _b : state.class
     });
 };
-var replaceOptions = function (opts) {
-    return ({
-        leftOptions: [],
-        value: opts.options[0],
-        rightOptions: opts.options.slice(1)
-    });
-};
 var updateOptions = function (state, opts) {
     return SN.OPTIONS_EMPTY === state.name
         ? opts.options && opts.options.length !== 0
-            ? make_closed_state(SN.INACTIVE, tslib_1.__assign(tslib_1.__assign({}, replaceOptions(opts)), replaceOptionalParams(state, opts)))
+            ? make_closed_state(SN.INACTIVE, tslib_1.__assign(tslib_1.__assign({}, to_options_data(opts.options)), replaceOptionalParams(state, opts)))
             : update_state(state, replaceOptionalParams(state, opts))
         // ALL OTHER STATES
         : opts.options
             ? 0 === opts.options.length
                 ? make_options_empty_state(replaceOptionalParams(state, opts))
-                : update_state(state, tslib_1.__assign(tslib_1.__assign(tslib_1.__assign({}, state), replaceOptions(opts)), replaceOptionalParams(state, opts)))
+                : update_state(state, tslib_1.__assign(tslib_1.__assign(tslib_1.__assign({}, state), to_options_data(opts.options)), replaceOptionalParams(state, opts)))
             : update_state(state, tslib_1.__assign(tslib_1.__assign({}, state), replaceOptionalParams(state, opts)));
 };
-var make_dropdown = function (opts) {
-    return (0, components_1.make_component)(0 === opts.options.length
+var create_options_data = function (options, selectedIndex) {
+    return ({
+        leftOptions: options.slice(0, selectedIndex),
+        value: options[selectedIndex],
+        rightOptions: options.slice(selectedIndex + 1),
+    });
+};
+var options_find_selected = function (options) {
+    return options.findIndex(function (option) { return true === option.autoselect; });
+};
+var to_options_data = function (options) {
+    return (function (selectedIndex) {
+        return create_options_data(options, -1 === selectedIndex ? 0 : selectedIndex);
+    })(options_find_selected(options));
+};
+var make_initial_state = function (opts) {
+    return 0 === opts.options.length
         ? make_options_empty_state({ id: opts.id, class: opts.class })
-        : make_closed_state(SN.INACTIVE, {
-            leftOptions: [],
-            value: opts.options[0],
-            rightOptions: opts.options.slice(1),
-            id: opts.id,
-            class: opts.class
-        }), render, {
+        : make_closed_state(SN.INACTIVE, tslib_1.__assign(tslib_1.__assign({}, to_options_data(opts.options)), { id: opts.id, class: opts.class }));
+};
+var make_dropdown = function (opts) {
+    return (0, components_1.make_component)(make_initial_state(opts), render, {
         localEvents: {
             blur: maybeLeave,
             click: click,

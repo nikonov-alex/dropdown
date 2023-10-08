@@ -1,6 +1,6 @@
 {
   "name": "@nikonov-alex/dropdown",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Dropdown based on @nikonov-alex/components library",
   "main": "index.js",
   "types": "index.tsx",
