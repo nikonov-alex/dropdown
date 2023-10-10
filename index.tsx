@@ -156,7 +156,9 @@ const render = ( state: State ): HTMLElement  =>
          className={ "na-dropdown" +
              ( state.class ? ` ${state.class}` : "" ) +
              ( state.type === ST.OPENED ? " opened" : "" )
-         } tabIndex={ 0 }>
+         }
+         data-value={ state.value.value ?? state.value.label }
+         tabIndex={ 0 }>
         <Value { ... state.value } />
         { state.type === ST.OPENED
             ? <ul className="na-dropdown-options">
@@ -240,9 +242,9 @@ const maybeChangeCurrent = ( state: State, event: Event ): State =>
     : change_current( state, option_index( event.target as HTMLElement ) );
 
 
-const make_changed_event = ( global: boolean, id: string | undefined, value: Option | null, name?: string ): CustomEvent<{ id?: string, value: Option | null }> =>
+const make_changed_event = ( global: boolean, id: string | undefined, value: Option | null ): CustomEvent<{ id?: string, value: Option | null }> =>
     new CustomEvent( (global && id ? `#${id}_` : "") + "dropdown-value-changed", {
-        detail: { id, value, name },
+        detail: { id, value },
         bubbles: true
     } );
 
@@ -251,11 +253,11 @@ const make_event_function = ( global: boolean ) =>
         ST.OPTIONS_EMPTY === oldState.type
             ? ST.OPTIONS_EMPTY === newState.type
                 ? null
-                : make_changed_event( global, newState.id, newState.value, newState.name )
+                : make_changed_event( global, newState.id, newState.value )
             : ST.OPTIONS_EMPTY === newState.type
-                ? make_changed_event( global, newState.id, null, newState.name )
+                ? make_changed_event( global, newState.id, null )
                 : value_index( oldState ) !== value_index( newState )
-                    ? make_changed_event( global, newState.id, newState.value, newState.name )
+                    ? make_changed_event( global, newState.id, newState.value )
                     : null;
 
 

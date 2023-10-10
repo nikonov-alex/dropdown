@@ -100,11 +100,12 @@ var Value = function (props) {
     return (0, jsx_runtime_1.jsx)("div", { className: "na-dropdown-value", children: props.label });
 };
 var render = function (state) {
+    var _a;
     return ST.OPTIONS_EMPTY === state.type
         ? (0, jsx_runtime_1.jsx)("div", { id: state.id, "data-name": state.name })
         : (0, jsx_runtime_1.jsxs)("div", { id: state.id, "data-name": state.name, className: "na-dropdown" +
                 (state.class ? " ".concat(state.class) : "") +
-                (state.type === ST.OPENED ? " opened" : ""), tabIndex: 0, children: [(0, jsx_runtime_1.jsx)(Value, tslib_1.__assign({}, state.value)), state.type === ST.OPENED
+                (state.type === ST.OPENED ? " opened" : ""), "data-value": (_a = state.value.value) !== null && _a !== void 0 ? _a : state.value.label, tabIndex: 0, children: [(0, jsx_runtime_1.jsx)(Value, tslib_1.__assign({}, state.value)), state.type === ST.OPENED
                     ? (0, jsx_runtime_1.jsx)("ul", { className: "na-dropdown-options", children: (0, jsx_runtime_1.jsx)(OptionsList, { options: state.leftOptions.concat(state.value, state.rightOptions), selectedIndex: state.currentIndex }) })
                     : (0, jsx_runtime_1.jsx)("span", {})] });
 };
@@ -174,9 +175,9 @@ var maybeChangeCurrent = function (state, event) {
             ? state
             : change_current(state, option_index(event.target));
 };
-var make_changed_event = function (global, id, value, name) {
+var make_changed_event = function (global, id, value) {
     return new CustomEvent((global && id ? "#".concat(id, "_") : "") + "dropdown-value-changed", {
-        detail: { id: id, value: value, name: name },
+        detail: { id: id, value: value },
         bubbles: true
     });
 };
@@ -185,11 +186,11 @@ var make_event_function = function (global) {
         return ST.OPTIONS_EMPTY === oldState.type
             ? ST.OPTIONS_EMPTY === newState.type
                 ? null
-                : make_changed_event(global, newState.id, newState.value, newState.name)
+                : make_changed_event(global, newState.id, newState.value)
             : ST.OPTIONS_EMPTY === newState.type
-                ? make_changed_event(global, newState.id, null, newState.name)
+                ? make_changed_event(global, newState.id, null)
                 : value_index(oldState) !== value_index(newState)
-                    ? make_changed_event(global, newState.id, newState.value, newState.name)
+                    ? make_changed_event(global, newState.id, newState.value)
                     : null;
     };
 };
