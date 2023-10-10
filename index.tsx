@@ -9,7 +9,7 @@ const make_option = ( label: string, value?: string, className?: string ): Optio
 
 
 
-enum SN {
+enum ST {
     OPTIONS_EMPTY,
     INACTIVE,
     FOCUSED,
@@ -18,7 +18,8 @@ enum SN {
 
 type OptionalData = {
     id?: string,
-    class?: string
+    class?: string,
+    name?: string
 }
 
 
@@ -26,10 +27,10 @@ type OptionalData = {
 
 type EmptyStateData = OptionalData;
 
-type OptionsEmptyState = { name: SN.OPTIONS_EMPTY } & EmptyStateData;
+type OptionsEmptyState = { type: ST.OPTIONS_EMPTY } & EmptyStateData;
 
 const make_options_empty_state = ( data: OptionalData ): OptionsEmptyState =>
-    ( { ... data, name: SN.OPTIONS_EMPTY } );
+    ( { ... data, type: ST.OPTIONS_EMPTY } );
 
 
 
@@ -42,10 +43,10 @@ type OptionsData = {
 
 type ClosedStateData = OptionsData & EmptyStateData;
 
-type ClosedState = { name: SN.INACTIVE | SN.FOCUSED } & ClosedStateData;
+type ClosedState = { type: ST.INACTIVE | ST.FOCUSED } & ClosedStateData;
 
-const make_closed_state = ( name: SN.INACTIVE | SN.FOCUSED, data: ClosedStateData ): ClosedState =>
-    ( { ... data, name,
+const make_closed_state = ( type: ST.INACTIVE | ST.FOCUSED, data: ClosedStateData ): ClosedState =>
+    ( { ... data, type,
         // @ts-ignore
         currentIndex: undefined } );
 
@@ -56,10 +57,10 @@ type OpenedStateData = {
     currentIndex: number
 } & ClosedStateData;
 
-type OpenedState = { name: SN.OPENED } & OpenedStateData;
+type OpenedState = { type: ST.OPENED } & OpenedStateData;
 
 const make_opened_state = ( data: ClosedStateData ): OpenedState =>
-    ( { ... data, currentIndex: data.leftOptions.length, name: SN.OPENED } );
+    ( { ... data, currentIndex: data.leftOptions.length, type: ST.OPENED } );
 
 const select_current = ( state: OpenedState ): OpenedState =>
     select_by_index( state, state.currentIndex );
@@ -148,15 +149,16 @@ const Value = ( props: Option ): HTMLElement =>
     <div className="na-dropdown-value">{ props.label }</div> as HTMLElement;
 
 const render = ( state: State ): HTMLElement  =>
-    SN.OPTIONS_EMPTY === state.name
-        ? <div id={ state.id } /> as HTMLElement
+    ST.OPTIONS_EMPTY === state.type
+        ? <div id={ state.id } data-name={ state.name } /> as HTMLElement
     : <div id={ state.id }
+         data-name={ state.name }
          className={ "na-dropdown" +
              ( state.class ? ` ${state.class}` : "" ) +
-             ( state.name === SN.OPENED ? " opened" : "" )
+             ( state.type === ST.OPENED ? " opened" : "" )
          } tabIndex={ 0 }>
         <Value { ... state.value } />
-        { state.name === SN.OPENED
+        { state.type === ST.OPENED
             ? <ul className="na-dropdown-options">
                 <OptionsList options={ state.leftOptions.concat( state.value, state.rightOptions ) }
                              selectedIndex={ state.currentIndex } />
@@ -176,26 +178,26 @@ const option_index = ( option: HTMLElement ): number =>
 
 
 const maybeLeave = ( state: State, event: Event ): State =>
-    state.name === SN.OPTIONS_EMPTY || state.name === SN.INACTIVE
+    state.type === ST.OPTIONS_EMPTY || state.type === ST.INACTIVE
         ? state
-    : make_closed_state( SN.INACTIVE, state );
+    : make_closed_state( ST.INACTIVE, state );
 
 
 const click = ( state: State, event: Event ): State =>
-    state.name === SN.OPTIONS_EMPTY
+    state.type === ST.OPTIONS_EMPTY
         ? state
-    : state.name === SN.OPENED
-        ? make_closed_state( SN.FOCUSED,
+    : state.type === ST.OPENED
+        ? make_closed_state( ST.FOCUSED,
             select_current( state ) )
     : make_opened_state( state );
 
 const keyup = ( state: State, event: Event ): State =>
-    state.name === SN.INACTIVE
-        ? make_closed_state( SN.FOCUSED, state )
+    state.type === ST.INACTIVE
+        ? make_closed_state( ST.FOCUSED, state )
     : state;
 
 const keydown = ( state: State, event: Event ): State =>
-    state.name === SN.FOCUSED
+    state.type === ST.FOCUSED
         ? (event as KeyboardEvent).ctrlKey
             ? state
         : (event as KeyboardEvent).altKey
@@ -213,15 +215,15 @@ const keydown = ( state: State, event: Event ): State =>
         : "ArrowRight" === (event as KeyboardEvent).code
             ? maybe_select_next( state )
         : state
-    : state.name === SN.OPENED
+    : state.type === ST.OPENED
         ? (event as KeyboardEvent).altKey
             ? [ "ArrowDown", "ArrowUp" ].includes( (event as KeyboardEvent).code )
-                ? make_closed_state( SN.FOCUSED, state )
+                ? make_closed_state( ST.FOCUSED, state )
                 : state
         : "Escape" === (event as KeyboardEvent).code
-            ? make_closed_state( SN.FOCUSED, state )
+            ? make_closed_state( ST.FOCUSED, state )
         : "Enter" === (event as KeyboardEvent).code
-            ? make_closed_state( SN.FOCUSED, select_current( state ) )
+            ? make_closed_state( ST.FOCUSED, select_current( state ) )
         : "ArrowDown" === (event as KeyboardEvent).code
             ? select_current( maybe_curent_next( state ) )
         : "ArrowUp" === (event as KeyboardEvent).code
@@ -231,36 +233,36 @@ const keydown = ( state: State, event: Event ): State =>
 
 
 const maybeChangeCurrent = ( state: State, event: Event ): State =>
-    SN.OPENED !== state.name
+    ST.OPENED !== state.type
         ? state
     : !is_target_option( event.target as EventTarget )
         ? state
     : change_current( state, option_index( event.target as HTMLElement ) );
 
 
-const make_changed_event = ( global: boolean, id: string | undefined, value: Option | null ): CustomEvent<{ id?: string, value: Option | null }> =>
+const make_changed_event = ( global: boolean, id: string | undefined, value: Option | null, name?: string ): CustomEvent<{ id?: string, value: Option | null }> =>
     new CustomEvent( (global && id ? `#${id}_` : "") + "dropdown-value-changed", {
-        detail: { id, value },
+        detail: { id, value, name },
         bubbles: true
     } );
 
 const make_event_function = ( global: boolean ) =>
     ( oldState: State, newState: State ) =>
-        SN.OPTIONS_EMPTY === oldState.name
-            ? SN.OPTIONS_EMPTY === newState.name
+        ST.OPTIONS_EMPTY === oldState.type
+            ? ST.OPTIONS_EMPTY === newState.type
                 ? null
-                : make_changed_event( global, newState.id, newState.value )
-            : SN.OPTIONS_EMPTY === newState.name
-                ? make_changed_event( global, newState.id, null )
+                : make_changed_event( global, newState.id, newState.value, newState.name )
+            : ST.OPTIONS_EMPTY === newState.type
+                ? make_changed_event( global, newState.id, null, newState.name )
                 : value_index( oldState ) !== value_index( newState )
-                    ? make_changed_event( global, newState.id, newState.value )
+                    ? make_changed_event( global, newState.id, newState.value, newState.name )
                     : null;
 
 
 
 
 type RequiredParams = { options: Option[] };
-type OptionalParams = { id: string, class: string };
+type OptionalParams = { id: string, class: string, name: string };
 type Options = Partial<RequiredParams & OptionalParams>;
 
 type Dropdown = Component<State, Options>;
@@ -269,13 +271,14 @@ type Dropdown = Component<State, Options>;
 const replaceOptionalParams = ( state: State, opts: Partial<OptionalParams> ): Partial<OptionalParams> =>
     ( {
         id: opts.id ?? state.id,
-        class: opts.class ?? state.class
+        class: opts.class ?? state.class,
+        name: opts.name ?? state.name
     } );
 
 const updateOptions = ( state: State, opts: Options ): State =>
-    SN.OPTIONS_EMPTY === state.name
+    ST.OPTIONS_EMPTY === state.type
         ? opts.options && opts.options.length !== 0
-            ? make_closed_state( SN.INACTIVE, {
+            ? make_closed_state( ST.INACTIVE, {
                 //@ts-ignore
                 ... to_options_data( opts.options ),
                 ... replaceOptionalParams( state, opts )
@@ -317,11 +320,12 @@ const to_options_data = ( options: Option[] ): OptionsData =>
 
 const make_initial_state = ( opts: RequiredParams & Partial<OptionalParams> ): State =>
     0 === opts.options.length
-        ? make_options_empty_state( { id: opts.id, class: opts.class } )
-        : make_closed_state( SN.INACTIVE, {
+        ? make_options_empty_state( { id: opts.id, class: opts.class, name: opts.name } )
+        : make_closed_state( ST.INACTIVE, {
                 ... to_options_data( opts.options ),
                 id: opts.id,
-                class: opts.class
+                class: opts.class,
+                name: opts.name
             }
         )
 
