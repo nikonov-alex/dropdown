@@ -3,8 +3,11 @@ import { make_component, Component } from "@nikonov-alex/components";
 
 type Option = { label: string, value?: string, class?: string, autoselect?: true };
 
-const make_option = ( label: string, value?: string, className?: string ): Option =>
-    ( { label, value, class: className } )
+const make_option = ( label: string, value?: string, options: {
+    class?: string,
+    autoselect?: true
+} = { } ): Option =>
+    ( { label, value, ... options } )
 
 
 

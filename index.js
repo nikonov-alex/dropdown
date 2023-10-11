@@ -4,8 +4,9 @@ exports.make_option = exports.Option = exports.make_dropdown = void 0;
 var tslib_1 = require("tslib");
 var jsx_runtime_1 = require("jsx-dom/jsx-runtime");
 var components_1 = require("@nikonov-alex/components");
-var make_option = function (label, value, className) {
-    return ({ label: label, value: value, class: className });
+var make_option = function (label, value, options) {
+    if (options === void 0) { options = {}; }
+    return (tslib_1.__assign({ label: label, value: value }, options));
 };
 exports.make_option = make_option;
 var ST;
