@@ -1,4 +1,4 @@
-import { make_component, Component } from "@nikonov-alex/components";
+import { make_component, draw_component, Component } from "@nikonov-alex/components";
 
 
 type Option = { label: string, value?: string, class?: string, autoselect?: true };
@@ -270,8 +270,6 @@ type RequiredParams = { options: Option[] };
 type OptionalParams = { id: string, class: string, name: string };
 type Options = Partial<RequiredParams & OptionalParams>;
 
-type Dropdown = Component<State, Options>;
-
 
 const replaceOptionalParams = ( state: State, opts: Partial<OptionalParams> ): Partial<OptionalParams> =>
     ( {
@@ -334,7 +332,7 @@ const make_initial_state = ( opts: RequiredParams & Partial<OptionalParams> ): S
             }
         )
 
-const make_dropdown = ( opts: RequiredParams & Partial<OptionalParams> ): Dropdown =>
+const make_dropdown = ( opts: RequiredParams & Partial<OptionalParams> ): Component<State, Options> =>
     make_component<State, Options>(
         make_initial_state( opts ),
         render, {
@@ -348,7 +346,10 @@ const make_dropdown = ( opts: RequiredParams & Partial<OptionalParams> ): Dropdo
             updateOptions,
             triggerGlobalEvent: make_event_function( true ),
             triggerLocalEvent: make_event_function( false )
-    } );
+    } )
+
+const Dropdown = ( props: RequiredParams & Partial<OptionalParams> ): HTMLElement =>
+    draw_component( make_dropdown( props ) )
 
 
 

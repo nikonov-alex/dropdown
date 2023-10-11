@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.make_option = exports.Option = exports.make_dropdown = void 0;
+exports.make_option = exports.Option = exports.Dropdown = exports.make_dropdown = void 0;
 var tslib_1 = require("tslib");
 var jsx_runtime_1 = require("jsx-dom/jsx-runtime");
 var components_1 = require("@nikonov-alex/components");
@@ -250,4 +250,8 @@ var make_dropdown = function (opts) {
     });
 };
 exports.make_dropdown = make_dropdown;
+var Dropdown = function (props) {
+    return (0, components_1.draw_component)(make_dropdown(props));
+};
+exports.Dropdown = Dropdown;
 //# sourceMappingURL=index.js.map
