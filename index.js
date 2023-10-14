@@ -106,7 +106,7 @@ var render = function (state) {
         ? (0, jsx_runtime_1.jsx)("div", { id: state.id, "data-name": state.name })
         : (0, jsx_runtime_1.jsxs)("div", { id: state.id, "data-name": state.name, className: "na-dropdown" +
                 (state.class ? " ".concat(state.class) : "") +
-                (state.type === ST.OPENED ? " opened" : ""), "data-value": (_a = state.value.value) !== null && _a !== void 0 ? _a : state.value.label, tabIndex: 0, children: [(0, jsx_runtime_1.jsx)(Value, tslib_1.__assign({}, state.value)), (0, jsx_runtime_1.jsx)("input", { type: "hidden", value: state.value.value || state.value.label }), state.type === ST.OPENED
+                (state.type === ST.OPENED ? " opened" : ""), "data-value": (_a = state.value.value) !== null && _a !== void 0 ? _a : state.value.label, tabIndex: 0, children: [(0, jsx_runtime_1.jsx)(Value, tslib_1.__assign({}, state.value)), (0, jsx_runtime_1.jsx)("input", { type: "hidden", required: state.required, pattern: state.pattern, value: state.value.value || state.value.label }), state.type === ST.OPENED
                     ? (0, jsx_runtime_1.jsx)("ul", { className: "na-dropdown-options", children: (0, jsx_runtime_1.jsx)(OptionsList, { options: state.leftOptions.concat(state.value, state.rightOptions), selectedIndex: state.currentIndex }) })
                     : (0, jsx_runtime_1.jsx)("span", {})] });
 };
@@ -196,12 +196,13 @@ var make_event_function = function (global) {
     };
 };
 var replaceOptionalParams = function (state, opts) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     return ({
         id: (_a = opts.id) !== null && _a !== void 0 ? _a : state.id,
         class: (_b = opts.class) !== null && _b !== void 0 ? _b : state.class,
         name: (_c = opts.name) !== null && _c !== void 0 ? _c : state.name,
-        require: (_d = opts.require) !== null && _d !== void 0 ? _d : state.require
+        required: (_d = opts.required) !== null && _d !== void 0 ? _d : state.required,
+        pattern: (_e = opts.pattern) !== null && _e !== void 0 ? _e : state.pattern
     });
 };
 var updateOptions = function (state, opts) {
@@ -237,9 +238,10 @@ var make_initial_state = function (opts) {
             id: opts.id,
             class: opts.class,
             name: opts.name,
-            require: opts.require
+            required: opts.required,
+            pattern: opts.pattern
         })
-        : make_closed_state(ST.INACTIVE, tslib_1.__assign(tslib_1.__assign({}, to_options_data(opts.options)), { id: opts.id, class: opts.class, name: opts.name, require: opts.require }));
+        : make_closed_state(ST.INACTIVE, tslib_1.__assign(tslib_1.__assign({}, to_options_data(opts.options)), { id: opts.id, class: opts.class, name: opts.name, required: opts.required, pattern: opts.pattern }));
 };
 var make_dropdown = function (opts) {
     return (0, components_1.make_component)(make_initial_state(opts), render, {

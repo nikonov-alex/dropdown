@@ -23,7 +23,8 @@ type OptionalData = {
     id?: string,
     class?: string,
     name?: string,
-    require?: string
+    required?: boolean,
+    pattern?: string
 }
 
 
@@ -164,7 +165,10 @@ const render = ( state: State ): HTMLElement  =>
          data-value={ state.value.value ?? state.value.label }
          tabIndex={ 0 }>
         <Value { ... state.value } />
-        <input type="hidden" value={ state.value.value || state.value.label } />
+        <input type="hidden"
+               required={ state.required }
+               pattern={ state.pattern }
+               value={ state.value.value || state.value.label } />
         { state.type === ST.OPENED
             ? <ul className="na-dropdown-options">
                 <OptionsList options={ state.leftOptions.concat( state.value, state.rightOptions ) }
@@ -269,7 +273,7 @@ const make_event_function = ( global: boolean ) =>
 
 
 type RequiredParams = { options: Option[] };
-type OptionalParams = { id: string, class: string, name: string, require: string };
+type OptionalParams = { id: string, class: string, name: string, required: boolean, pattern?: string };
 type Options = Partial<RequiredParams & OptionalParams>;
 
 
@@ -278,7 +282,8 @@ const replaceOptionalParams = ( state: State, opts: Partial<OptionalParams> ): P
         id: opts.id ?? state.id,
         class: opts.class ?? state.class,
         name: opts.name ?? state.name,
-        require: opts.require ?? state.require
+        required: opts.required ?? state.required,
+        pattern: opts.pattern ?? state.pattern
     } );
 
 const updateOptions = ( state: State, opts: Options ): State =>
@@ -330,13 +335,16 @@ const make_initial_state = ( opts: RequiredParams & Partial<OptionalParams> ): S
             id: opts.id,
             class: opts.class,
             name: opts.name,
-            require: opts.require } )
+            required: opts.required,
+            pattern: opts.pattern
+        } )
         : make_closed_state( ST.INACTIVE, {
                 ... to_options_data( opts.options ),
                 id: opts.id,
                 class: opts.class,
                 name: opts.name,
-                require: opts.require
+                required: opts.required,
+                pattern: opts.pattern
             }
         )
 
