@@ -126,7 +126,8 @@ var render = function (state) {
         ? (0, jsx_runtime_1.jsx)("div", { id: state.id, "data-name": state.name })
         : (0, jsx_runtime_1.jsxs)("div", { id: state.id, "data-name": state.name, className: "na-dropdown" +
                 (state.class ? " ".concat(state.class) : "") +
-                (state.type === ST.OPENED ? " opened" : ""), "data-value": (_a = state.value.value) !== null && _a !== void 0 ? _a : state.value.label, tabIndex: 0, children: [(0, jsx_runtime_1.jsx)(Value, tslib_1.__assign({}, state)), state.type === ST.OPENED
+                (state.type === ST.OPENED ? " opened" : "") +
+                (!state.valid ? " invalid" : ""), "data-value": (_a = state.value.value) !== null && _a !== void 0 ? _a : state.value.label, tabIndex: 0, children: [(0, jsx_runtime_1.jsx)(Value, tslib_1.__assign({}, state)), state.type === ST.OPENED
                     ? (0, jsx_runtime_1.jsx)("ul", { className: "na-dropdown-options", children: (0, jsx_runtime_1.jsx)(OptionsList, { options: state.leftOptions.concat(state.value, state.rightOptions), selectedIndex: state.currentIndex }) })
                     : (0, jsx_runtime_1.jsx)("span", {})] });
 };

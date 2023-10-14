@@ -185,7 +185,8 @@ const render = (state: State): HTMLElement =>
                data-name={state.name}
                className={"na-dropdown" +
                    (state.class ? ` ${state.class}` : "") +
-                   (state.type === ST.OPENED ? " opened" : "")
+                   (state.type === ST.OPENED ? " opened" : "") +
+                   (!state.valid ? " invalid" : "")
                }
                data-value={state.value.value ?? state.value.label}
                tabIndex={0}>
