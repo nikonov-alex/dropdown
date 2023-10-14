@@ -98,7 +98,7 @@ const select_by_index = <S extends NotEmptyState>(state: S, index: number): S =>
         ? state
         : (options =>
                 // @ts-ignore
-                update_state(state, set_valid({
+                set_valid(update_state(state, {
                     leftOptions: options.slice(0, index),
                     value: options[index],
                     rightOptions: options.slice(index + 1)
@@ -108,7 +108,7 @@ const select_by_index = <S extends NotEmptyState>(state: S, index: number): S =>
 const maybe_select_prev = (state: NotEmptyState): NotEmptyState =>
     0 === state.leftOptions.length
         ? state
-        : update_state(state, set_valid( {
+        : set_valid(update_state(state, {
             leftOptions: state.leftOptions.slice(0, -1),
             value: state.leftOptions[state.leftOptions.length - 1],
             rightOptions: [state.value].concat(state.rightOptions)
@@ -117,7 +117,7 @@ const maybe_select_prev = (state: NotEmptyState): NotEmptyState =>
 const maybe_select_next = (state: NotEmptyState): NotEmptyState =>
     0 === state.rightOptions.length
         ? state
-        : update_state(state, set_valid( {
+        : set_valid(update_state(state, {
             leftOptions: state.leftOptions.concat(state.value),
             value: state.rightOptions[0],
             rightOptions: state.rightOptions.slice(1)

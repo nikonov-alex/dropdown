@@ -58,7 +58,7 @@ var select_by_index = function (state, index) {
         ? state
         : (function (options) {
             // @ts-ignore
-            return update_state(state, set_valid({
+            return set_valid(update_state(state, {
                 leftOptions: options.slice(0, index),
                 value: options[index],
                 rightOptions: options.slice(index + 1)
@@ -68,7 +68,7 @@ var select_by_index = function (state, index) {
 var maybe_select_prev = function (state) {
     return 0 === state.leftOptions.length
         ? state
-        : update_state(state, set_valid({
+        : set_valid(update_state(state, {
             leftOptions: state.leftOptions.slice(0, -1),
             value: state.leftOptions[state.leftOptions.length - 1],
             rightOptions: [state.value].concat(state.rightOptions)
@@ -77,7 +77,7 @@ var maybe_select_prev = function (state) {
 var maybe_select_next = function (state) {
     return 0 === state.rightOptions.length
         ? state
-        : update_state(state, set_valid({
+        : set_valid(update_state(state, {
             leftOptions: state.leftOptions.concat(state.value),
             value: state.rightOptions[0],
             rightOptions: state.rightOptions.slice(1)
