@@ -1,7 +1,7 @@
 import {make_component, draw_component, Component} from "@nikonov-alex/components";
 
 
-type Option = { label: string, value?: string, class?: string, autoselect?: true };
+type Option = { label: string, value?: string, class?: string, autoselect?: true, disabled?: true };
 
 const make_option = (label: string, value?: string, options: {
     class?: string,
@@ -22,7 +22,6 @@ type OptionalData = {
     class?: string,
     name?: string,
     required?: boolean,
-    pattern?: RegExp
 }
 
 
@@ -40,7 +39,11 @@ type OptionsData = {
     rightOptions: Option[];
 };
 
-type ClosedStateData = OptionsData & EmptyStateData;
+type ValidData = {
+    valid: boolean
+}
+
+type ClosedStateData = OptionsData & ValidData & EmptyStateData;
 
 type ClosedState = { type: ST.INACTIVE | ST.FOCUSED } & ClosedStateData;
 
@@ -95,30 +98,30 @@ const select_by_index = <S extends NotEmptyState>(state: S, index: number): S =>
         ? state
         : (options =>
                 // @ts-ignore
-                update_state(state, {
+                update_state(state, set_valid({
                     leftOptions: options.slice(0, index),
                     value: options[index],
                     rightOptions: options.slice(index + 1)
-                })
+                }))
         )(state.leftOptions.concat(state.value, state.rightOptions));
 
 const maybe_select_prev = (state: NotEmptyState): NotEmptyState =>
     0 === state.leftOptions.length
         ? state
-        : update_state(state, {
+        : update_state(state, set_valid( {
             leftOptions: state.leftOptions.slice(0, -1),
             value: state.leftOptions[state.leftOptions.length - 1],
             rightOptions: [state.value].concat(state.rightOptions)
-        });
+        } ));
 
 const maybe_select_next = (state: NotEmptyState): NotEmptyState =>
     0 === state.rightOptions.length
         ? state
-        : update_state(state, {
+        : update_state(state, set_valid( {
             leftOptions: state.leftOptions.concat(state.value),
             value: state.rightOptions[0],
             rightOptions: state.rightOptions.slice(1)
-        });
+        } ));
 
 
 type State = OptionsEmptyState | NotEmptyState;
@@ -126,8 +129,16 @@ type State = OptionsEmptyState | NotEmptyState;
 const update_state = <S extends State>(state: S, data: Partial<{ [K in keyof S]: S[K] }>): S =>
     ({...state, ...data});
 
-const value = ( state: ClosedState | OpenedState ): string =>
-    state.value.value || state.value.label;
+const valid = ( required: boolean | undefined, value: Option ): boolean =>
+    required
+        ? !value.disabled
+        : true
+
+const set_valid = <T extends OptionsData & OptionalData>( data: T ): T & { valid: boolean } =>
+    ( {
+        ... data,
+        valid: valid( data.required, data.value )
+    } )
 
 
 
@@ -160,11 +171,9 @@ const Value = (state: ClosedState | OpenedState): HTMLElement =>
                 height: "100%",
                 width: "100%"
             }}>
-            { state.pattern
-                ? state.pattern.test(value(state))
-                    ? <option value="1" selected={ true }>1</option>
-                    : <option selected={ true } disabled={ true }></option>
-                : <option value="1" selected={ true }>1</option>
+            { state.valid
+                ? <option value="1" selected={ true }>1</option>
+                : <option selected={ true } disabled={ true }></option>
             }
         </select>
     </div> as HTMLElement;
@@ -284,7 +293,7 @@ const make_event_function = (global: boolean) =>
 
 
 type RequiredParams = { options: Option[] };
-type OptionalParams = { id: string, class: string, name: string, required: boolean, pattern?: RegExp };
+type OptionalParams = { id: string, class: string, name: string, required: boolean };
 type Options = Partial<RequiredParams & OptionalParams>;
 
 
@@ -293,18 +302,17 @@ const replaceOptionalParams = (state: State, opts: Partial<OptionalParams>): Par
         id: opts.id ?? state.id,
         class: opts.class ?? state.class,
         name: opts.name ?? state.name,
-        required: opts.required ?? state.required,
-        pattern: opts.pattern ?? state.pattern
+        required: opts.required ?? state.required
     });
 
 const updateOptions = (state: State, opts: Options): State =>
     ST.OPTIONS_EMPTY === state.type
         ? opts.options && opts.options.length !== 0
-            ? make_closed_state(ST.INACTIVE, {
+            ? make_closed_state(ST.INACTIVE, set_valid( {
                 //@ts-ignore
                 ...to_options_data(opts.options),
                 ...replaceOptionalParams(state, opts)
-            })
+            } ))
             : update_state(state,
                 replaceOptionalParams(state, opts))
         // ALL OTHER STATES
@@ -312,16 +320,16 @@ const updateOptions = (state: State, opts: Options): State =>
             ? 0 === opts.options.length
                 ? make_options_empty_state(
                     replaceOptionalParams(state, opts))
-                : update_state(state, {
+                : update_state(state, set_valid( {
                     ...state,
                     //@ts-ignore
                     ...to_options_data(opts.options),
                     ...replaceOptionalParams(state, opts)
-                })
-            : update_state(state, {
+                } ))
+            : update_state(state, set_valid( {
                 ...state,
                 ...replaceOptionalParams(state, opts)
-            });
+            } ));
 
 
 const create_options_data = (options: Option[], selectedIndex: number): OptionsData =>
@@ -345,17 +353,16 @@ const make_initial_state = (opts: RequiredParams & Partial<OptionalParams>): Sta
             id: opts.id,
             class: opts.class,
             name: opts.name,
-            required: opts.required,
-            pattern: opts.pattern
+            required: opts.required
         })
-        : make_closed_state(ST.INACTIVE, {
+        : make_closed_state(ST.INACTIVE,
+            set_valid( {
                 ...to_options_data(opts.options),
                 id: opts.id,
                 class: opts.class,
                 name: opts.name,
                 required: opts.required,
-                pattern: opts.pattern
-            }
+            } )
         )
 
 const make_dropdown = (opts: RequiredParams & Partial<OptionalParams>): Component<State, Options> =>

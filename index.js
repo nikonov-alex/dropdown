@@ -58,36 +58,41 @@ var select_by_index = function (state, index) {
         ? state
         : (function (options) {
             // @ts-ignore
-            return update_state(state, {
+            return update_state(state, set_valid({
                 leftOptions: options.slice(0, index),
                 value: options[index],
                 rightOptions: options.slice(index + 1)
-            });
+            }));
         })(state.leftOptions.concat(state.value, state.rightOptions));
 };
 var maybe_select_prev = function (state) {
     return 0 === state.leftOptions.length
         ? state
-        : update_state(state, {
+        : update_state(state, set_valid({
             leftOptions: state.leftOptions.slice(0, -1),
             value: state.leftOptions[state.leftOptions.length - 1],
             rightOptions: [state.value].concat(state.rightOptions)
-        });
+        }));
 };
 var maybe_select_next = function (state) {
     return 0 === state.rightOptions.length
         ? state
-        : update_state(state, {
+        : update_state(state, set_valid({
             leftOptions: state.leftOptions.concat(state.value),
             value: state.rightOptions[0],
             rightOptions: state.rightOptions.slice(1)
-        });
+        }));
 };
 var update_state = function (state, data) {
     return (tslib_1.__assign(tslib_1.__assign({}, state), data));
 };
-var value = function (state) {
-    return state.value.value || state.value.label;
+var valid = function (required, value) {
+    return required
+        ? !value.disabled
+        : true;
+};
+var set_valid = function (data) {
+    return (tslib_1.__assign(tslib_1.__assign({}, data), { valid: valid(data.required, data.value) }));
 };
 var Option = function (props) {
     return (0, jsx_runtime_1.jsx)("li", { className: "na-dropdown-option" +
@@ -111,11 +116,9 @@ var Value = function (state) {
                     left: "0",
                     height: "100%",
                     width: "100%"
-                }, children: state.pattern
-                    ? state.pattern.test(value(state))
-                        ? (0, jsx_runtime_1.jsx)("option", { value: "1", selected: true, children: "1" })
-                        : (0, jsx_runtime_1.jsx)("option", { selected: true, disabled: true })
-                    : (0, jsx_runtime_1.jsx)("option", { value: "1", selected: true, children: "1" }) })] });
+                }, children: state.valid
+                    ? (0, jsx_runtime_1.jsx)("option", { value: "1", selected: true, children: "1" })
+                    : (0, jsx_runtime_1.jsx)("option", { selected: true, disabled: true }) })] });
 };
 var render = function (state) {
     var _a;
@@ -213,26 +216,25 @@ var make_event_function = function (global) {
     };
 };
 var replaceOptionalParams = function (state, opts) {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d;
     return ({
         id: (_a = opts.id) !== null && _a !== void 0 ? _a : state.id,
         class: (_b = opts.class) !== null && _b !== void 0 ? _b : state.class,
         name: (_c = opts.name) !== null && _c !== void 0 ? _c : state.name,
-        required: (_d = opts.required) !== null && _d !== void 0 ? _d : state.required,
-        pattern: (_e = opts.pattern) !== null && _e !== void 0 ? _e : state.pattern
+        required: (_d = opts.required) !== null && _d !== void 0 ? _d : state.required
     });
 };
 var updateOptions = function (state, opts) {
     return ST.OPTIONS_EMPTY === state.type
         ? opts.options && opts.options.length !== 0
-            ? make_closed_state(ST.INACTIVE, tslib_1.__assign(tslib_1.__assign({}, to_options_data(opts.options)), replaceOptionalParams(state, opts)))
+            ? make_closed_state(ST.INACTIVE, set_valid(tslib_1.__assign(tslib_1.__assign({}, to_options_data(opts.options)), replaceOptionalParams(state, opts))))
             : update_state(state, replaceOptionalParams(state, opts))
         // ALL OTHER STATES
         : opts.options
             ? 0 === opts.options.length
                 ? make_options_empty_state(replaceOptionalParams(state, opts))
-                : update_state(state, tslib_1.__assign(tslib_1.__assign(tslib_1.__assign({}, state), to_options_data(opts.options)), replaceOptionalParams(state, opts)))
-            : update_state(state, tslib_1.__assign(tslib_1.__assign({}, state), replaceOptionalParams(state, opts)));
+                : update_state(state, set_valid(tslib_1.__assign(tslib_1.__assign(tslib_1.__assign({}, state), to_options_data(opts.options)), replaceOptionalParams(state, opts))))
+            : update_state(state, set_valid(tslib_1.__assign(tslib_1.__assign({}, state), replaceOptionalParams(state, opts))));
 };
 var create_options_data = function (options, selectedIndex) {
     return ({
@@ -255,10 +257,9 @@ var make_initial_state = function (opts) {
             id: opts.id,
             class: opts.class,
             name: opts.name,
-            required: opts.required,
-            pattern: opts.pattern
+            required: opts.required
         })
-        : make_closed_state(ST.INACTIVE, tslib_1.__assign(tslib_1.__assign({}, to_options_data(opts.options)), { id: opts.id, class: opts.class, name: opts.name, required: opts.required, pattern: opts.pattern }));
+        : make_closed_state(ST.INACTIVE, set_valid(tslib_1.__assign(tslib_1.__assign({}, to_options_data(opts.options)), { id: opts.id, class: opts.class, name: opts.name, required: opts.required })));
 };
 var make_dropdown = function (opts) {
     return (0, components_1.make_component)(make_initial_state(opts), render, {
