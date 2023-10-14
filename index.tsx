@@ -150,33 +150,37 @@ const OptionsList = ( props: { options: Option[], selectedIndex: number } ) =>
         <Option { ... option } index={ index } selected={ index === props.selectedIndex } /> )
     }</>;
 
-const Value = ( props: Option ): HTMLElement =>
-    <div className="na-dropdown-value">{ props.label }</div> as HTMLElement;
+const Value = ( state: ClosedState | OpenedState ): HTMLElement =>
+    <div className="na-dropdown-value" style={{
+        position: "relative"
+    }}>{ state.value.label }
+        <input type="text"
+               required={state.required}
+               pattern={state.pattern}
+               style={{
+                   position: "absolute",
+                   pointerEvents: "none",
+                   opacity: "0",
+                   top: "0",
+                   left: "0",
+                   height: "100%",
+                   width: "100%"
+               }}
+               value={state.value.value || state.value.label}/>
+    </div> as HTMLElement;
 
-const render = ( state: State ): HTMLElement  =>
+const render = (state: State): HTMLElement =>
     ST.OPTIONS_EMPTY === state.type
-        ? <div id={ state.id } data-name={ state.name } /> as HTMLElement
-    : <div id={ state.id }
-         style={ {
-             position: "relative"
-         } }
-         data-name={ state.name }
-         className={ "na-dropdown" +
-             ( state.class ? ` ${state.class}` : "" ) +
+        ? <div id={state.id} data-name={state.name}/> as HTMLElement
+        : <div id={state.id}
+               data-name={state.name}
+               className={"na-dropdown" +
+                   (state.class ? ` ${state.class}` : "") +
              ( state.type === ST.OPENED ? " opened" : "" )
          }
          data-value={ state.value.value ?? state.value.label }
          tabIndex={ 0 }>
-        <Value { ... state.value } />
-        <input type="text"
-               required={ state.required }
-               pattern={ state.pattern }
-               style={ {
-                   position: "absolute",
-                   pointerEvents: "none",
-                   opacity: "0"
-               } }
-               value={ state.value.value || state.value.label } />
+        <Value { ... state } />
         { state.type === ST.OPENED
             ? <ul className="na-dropdown-options">
                 <OptionsList options={ state.leftOptions.concat( state.value, state.rightOptions ) }

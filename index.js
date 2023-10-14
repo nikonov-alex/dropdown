@@ -97,22 +97,26 @@ var OptionsList = function (props) {
             return (0, jsx_runtime_1.jsx)(Option, tslib_1.__assign({}, option, { index: index, selected: index === props.selectedIndex }));
         }) });
 };
-var Value = function (props) {
-    return (0, jsx_runtime_1.jsx)("div", { className: "na-dropdown-value", children: props.label });
+var Value = function (state) {
+    return (0, jsx_runtime_1.jsxs)("div", { className: "na-dropdown-value", style: {
+            position: "relative"
+        }, children: [state.value.label, (0, jsx_runtime_1.jsx)("input", { type: "text", required: state.required, pattern: state.pattern, style: {
+                    position: "absolute",
+                    pointerEvents: "none",
+                    opacity: "0",
+                    top: "0",
+                    left: "0",
+                    height: "100%",
+                    width: "100%"
+                }, value: state.value.value || state.value.label })] });
 };
 var render = function (state) {
     var _a;
     return ST.OPTIONS_EMPTY === state.type
         ? (0, jsx_runtime_1.jsx)("div", { id: state.id, "data-name": state.name })
-        : (0, jsx_runtime_1.jsxs)("div", { id: state.id, style: {
-                position: "relative"
-            }, "data-name": state.name, className: "na-dropdown" +
+        : (0, jsx_runtime_1.jsxs)("div", { id: state.id, "data-name": state.name, className: "na-dropdown" +
                 (state.class ? " ".concat(state.class) : "") +
-                (state.type === ST.OPENED ? " opened" : ""), "data-value": (_a = state.value.value) !== null && _a !== void 0 ? _a : state.value.label, tabIndex: 0, children: [(0, jsx_runtime_1.jsx)(Value, tslib_1.__assign({}, state.value)), (0, jsx_runtime_1.jsx)("input", { type: "text", required: state.required, pattern: state.pattern, style: {
-                        position: "absolute",
-                        pointerEvents: "none",
-                        opacity: "0"
-                    }, value: state.value.value || state.value.label }), state.type === ST.OPENED
+                (state.type === ST.OPENED ? " opened" : ""), "data-value": (_a = state.value.value) !== null && _a !== void 0 ? _a : state.value.label, tabIndex: 0, children: [(0, jsx_runtime_1.jsx)(Value, tslib_1.__assign({}, state)), state.type === ST.OPENED
                     ? (0, jsx_runtime_1.jsx)("ul", { className: "na-dropdown-options", children: (0, jsx_runtime_1.jsx)(OptionsList, { options: state.leftOptions.concat(state.value, state.rightOptions), selectedIndex: state.currentIndex }) })
                     : (0, jsx_runtime_1.jsx)("span", {})] });
 };
