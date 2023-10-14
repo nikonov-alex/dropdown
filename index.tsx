@@ -126,6 +126,11 @@ type State = OptionsEmptyState | NotEmptyState;
 const update_state = <S extends State>(state: S, data: Partial<{ [K in keyof S]: S[K] }>): S =>
     ({...state, ...data});
 
+const value = ( state: ClosedState | OpenedState ): string =>
+    state.value.value || state.value.label;
+
+
+
 
 const Option = (props: Option & { index: number, selected?: boolean }): HTMLElement =>
     <li className={"na-dropdown-option" +
@@ -138,9 +143,14 @@ const OptionsList = (props: { options: Option[], selectedIndex: number }) =>
         <Option {...option} index={index} selected={index === props.selectedIndex}/>)
     }</>;
 
-const HIDDEN_SELECT: HTMLElement =
-    <select
-            required={ true }
+
+const Value = (state: ClosedState | OpenedState): HTMLElement =>
+    <div className="na-dropdown-value" style={{
+        position: "relative"
+    }}>
+        {state.value.label}
+        <select
+            required={ state.required }
             style={{
                 position: "absolute",
                 pointerEvents: "none",
@@ -149,16 +159,14 @@ const HIDDEN_SELECT: HTMLElement =
                 left: "0",
                 height: "100%",
                 width: "100%"
-    }}></select> as HTMLElement;
-
-const Value = (state: ClosedState | OpenedState): HTMLElement =>
-    <div className="na-dropdown-value" style={{
-        position: "relative"
-    }}>{state.value.label}
-        { state.required && state.pattern && !state.pattern.test(state.value.value || state.value.label)
-            ? HIDDEN_SELECT
-            : <input type="hidden" />
-        }
+            }}>
+            { state.pattern
+                ? state.pattern.test(value(state))
+                    ? <option value={1}>1</option>
+                    : <option></option>
+                : <option value={1}>1</option>
+            }
+        </select>
     </div> as HTMLElement;
 
 const render = (state: State): HTMLElement =>
