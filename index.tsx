@@ -157,6 +157,9 @@ const render = ( state: State ): HTMLElement  =>
     ST.OPTIONS_EMPTY === state.type
         ? <div id={ state.id } data-name={ state.name } /> as HTMLElement
     : <div id={ state.id }
+         style={ {
+             position: "relative"
+         } }
          data-name={ state.name }
          className={ "na-dropdown" +
              ( state.class ? ` ${state.class}` : "" ) +
@@ -165,9 +168,14 @@ const render = ( state: State ): HTMLElement  =>
          data-value={ state.value.value ?? state.value.label }
          tabIndex={ 0 }>
         <Value { ... state.value } />
-        <input type="hidden"
+        <input type="text"
                required={ state.required }
                pattern={ state.pattern }
+               style={ {
+                   position: "absolute",
+                   pointerEvents: "none",
+                   opacity: "0"
+               } }
                value={ state.value.value || state.value.label } />
         { state.type === ST.OPENED
             ? <ul className="na-dropdown-options">
