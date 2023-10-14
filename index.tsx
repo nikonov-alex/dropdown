@@ -22,7 +22,8 @@ enum ST {
 type OptionalData = {
     id?: string,
     class?: string,
-    name?: string
+    name?: string,
+    require?: string
 }
 
 
@@ -163,6 +164,7 @@ const render = ( state: State ): HTMLElement  =>
          data-value={ state.value.value ?? state.value.label }
          tabIndex={ 0 }>
         <Value { ... state.value } />
+        <input type="hidden" value={ state.value.value || state.value.label } />
         { state.type === ST.OPENED
             ? <ul className="na-dropdown-options">
                 <OptionsList options={ state.leftOptions.concat( state.value, state.rightOptions ) }
@@ -267,7 +269,7 @@ const make_event_function = ( global: boolean ) =>
 
 
 type RequiredParams = { options: Option[] };
-type OptionalParams = { id: string, class: string, name: string };
+type OptionalParams = { id: string, class: string, name: string, require: string };
 type Options = Partial<RequiredParams & OptionalParams>;
 
 
@@ -275,7 +277,8 @@ const replaceOptionalParams = ( state: State, opts: Partial<OptionalParams> ): P
     ( {
         id: opts.id ?? state.id,
         class: opts.class ?? state.class,
-        name: opts.name ?? state.name
+        name: opts.name ?? state.name,
+        require: opts.require ?? state.require
     } );
 
 const updateOptions = ( state: State, opts: Options ): State =>
@@ -323,12 +326,17 @@ const to_options_data = ( options: Option[] ): OptionsData =>
 
 const make_initial_state = ( opts: RequiredParams & Partial<OptionalParams> ): State =>
     0 === opts.options.length
-        ? make_options_empty_state( { id: opts.id, class: opts.class, name: opts.name } )
+        ? make_options_empty_state( {
+            id: opts.id,
+            class: opts.class,
+            name: opts.name,
+            require: opts.require } )
         : make_closed_state( ST.INACTIVE, {
                 ... to_options_data( opts.options ),
                 id: opts.id,
                 class: opts.class,
-                name: opts.name
+                name: opts.name,
+                require: opts.require
             }
         )
 
