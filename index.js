@@ -113,9 +113,9 @@ var Value = function (state) {
                     width: "100%"
                 }, children: state.pattern
                     ? state.pattern.test(value(state))
-                        ? (0, jsx_runtime_1.jsx)("option", { value: 1, children: "1" })
-                        : (0, jsx_runtime_1.jsx)("option", {})
-                    : (0, jsx_runtime_1.jsx)("option", { value: 1, children: "1" }) })] });
+                        ? (0, jsx_runtime_1.jsx)("option", { value: "1", selected: true, children: "1" })
+                        : (0, jsx_runtime_1.jsx)("option", { selected: true, disabled: true })
+                    : (0, jsx_runtime_1.jsx)("option", { value: "1", selected: true, children: "1" }) })] });
 };
 var render = function (state) {
     var _a;

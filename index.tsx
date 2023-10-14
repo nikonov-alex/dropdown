@@ -162,9 +162,9 @@ const Value = (state: ClosedState | OpenedState): HTMLElement =>
             }}>
             { state.pattern
                 ? state.pattern.test(value(state))
-                    ? <option value={1}>1</option>
-                    : <option></option>
-                : <option value={1}>1</option>
+                    ? <option value="1" selected={ true }>1</option>
+                    : <option selected={ true } disabled={ true }></option>
+                : <option value="1" selected={ true }>1</option>
             }
         </select>
     </div> as HTMLElement;
