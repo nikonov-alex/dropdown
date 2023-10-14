@@ -97,18 +97,21 @@ var OptionsList = function (props) {
             return (0, jsx_runtime_1.jsx)(Option, tslib_1.__assign({}, option, { index: index, selected: index === props.selectedIndex }));
         }) });
 };
+var HIDDEN_SELECT = (0, jsx_runtime_1.jsx)("select", { required: true, style: {
+        position: "absolute",
+        pointerEvents: "none",
+        opacity: "0",
+        top: "0",
+        left: "0",
+        height: "100%",
+        width: "100%"
+    } });
 var Value = function (state) {
     return (0, jsx_runtime_1.jsxs)("div", { className: "na-dropdown-value", style: {
             position: "relative"
-        }, children: [state.value.label, (0, jsx_runtime_1.jsx)("input", { type: "text", required: state.required, pattern: state.pattern, style: {
-                    position: "absolute",
-                    pointerEvents: "none",
-                    opacity: "0",
-                    top: "0",
-                    left: "0",
-                    height: "100%",
-                    width: "100%"
-                }, value: state.value.value || state.value.label })] });
+        }, children: [state.value.label, state.required && state.pattern && !state.pattern.test(state.value.value || state.value.label)
+                ? HIDDEN_SELECT
+                : (0, jsx_runtime_1.jsx)("input", { type: "hidden" })] });
 };
 var render = function (state) {
     var _a;
