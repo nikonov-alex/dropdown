@@ -147,7 +147,9 @@ const Option = (props: Option & { index: number, selected?: boolean }): HTMLElem
     <li className={"na-dropdown-option" +
         (props.selected ? " selected" : "") +
         (props.class ? ` ${props.class}` : "")
-    } data-index={props.index}>{props.label}</li> as HTMLElement;
+    } data-index={props.index}>
+        <span className="na-dropdown-option-label">{props.label}</span>
+    </li> as HTMLElement;
 
 const OptionsList = (props: { options: Option[], selectedIndex: number }) =>
     <>{props.options.map((option, index) =>

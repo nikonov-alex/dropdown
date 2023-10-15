@@ -97,7 +97,7 @@ var set_valid = function (data) {
 var Option = function (props) {
     return (0, jsx_runtime_1.jsx)("li", { className: "na-dropdown-option" +
             (props.selected ? " selected" : "") +
-            (props.class ? " ".concat(props.class) : ""), "data-index": props.index, children: props.label });
+            (props.class ? " ".concat(props.class) : ""), "data-index": props.index, children: (0, jsx_runtime_1.jsx)("span", { className: "na-dropdown-option-label", children: props.label }) });
 };
 exports.Option = Option;
 var OptionsList = function (props) {
