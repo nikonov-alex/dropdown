@@ -161,6 +161,7 @@ const Value = (state: ClosedState | OpenedState): HTMLElement =>
     }}>
         {state.value.label}
         <select
+            tabIndex="-1"
             required={ state.required }
             style={{
                 position: "absolute",
@@ -227,40 +228,40 @@ const keyup = (state: State, event: Event): State =>
         ? make_closed_state(ST.FOCUSED, state)
         : state;
 
-const keydown = (state: State, event: Event): State =>
+const keydown = ( state: State, event: Event ): State =>
     state.type === ST.FOCUSED
         ? (event as KeyboardEvent).ctrlKey
             ? state
-            : (event as KeyboardEvent).altKey
-                ? ["ArrowDown", "ArrowUp"].includes((event as KeyboardEvent).code)
-                    ? make_opened_state(state)
-                    : state
-                : ["Enter", "Space"].includes((event as KeyboardEvent).code)
-                    ? make_opened_state(state)
-                    : "ArrowDown" === (event as KeyboardEvent).code
-                        ? maybe_select_next(state)
-                        : "ArrowLeft" === (event as KeyboardEvent).code
-                            ? maybe_select_prev(state)
-                            : "ArrowUp" === (event as KeyboardEvent).code
-                                ? maybe_select_prev(state)
-                                : "ArrowRight" === (event as KeyboardEvent).code
-                                    ? maybe_select_next(state)
-                                    : state
-        : state.type === ST.OPENED
-            ? (event as KeyboardEvent).altKey
-                ? ["ArrowDown", "ArrowUp"].includes((event as KeyboardEvent).code)
-                    ? make_closed_state(ST.FOCUSED, state)
-                    : state
-                : "Escape" === (event as KeyboardEvent).code
-                    ? make_closed_state(ST.FOCUSED, state)
-                    : "Enter" === (event as KeyboardEvent).code
-                        ? make_closed_state(ST.FOCUSED, select_current(state))
-                        : "ArrowDown" === (event as KeyboardEvent).code
-                            ? select_current(maybe_curent_next(state))
-                            : "ArrowUp" === (event as KeyboardEvent).code
-                                ? select_current(maybe_current_prev(state))
-                                : state
-            : state
+        : (event as KeyboardEvent).altKey
+            ? [ "ArrowDown", "ArrowUp" ].includes( (event as KeyboardEvent).code )
+                ? make_opened_state( state )
+                : state
+        : [ "Enter", "Space" ].includes( (event as KeyboardEvent).code )
+            ? make_opened_state( state )
+        : "ArrowDown" === (event as KeyboardEvent).code
+            ? maybe_select_next( state )
+        : "ArrowLeft" === (event as KeyboardEvent).code
+            ? maybe_select_prev( state )
+        : "ArrowUp" === (event as KeyboardEvent).code
+            ? maybe_select_prev( state )
+        : "ArrowRight" === (event as KeyboardEvent).code
+            ? maybe_select_next( state )
+        : state
+    : state.type === ST.OPENED
+        ? (event as KeyboardEvent).altKey
+            ? [ "ArrowDown", "ArrowUp" ].includes( (event as KeyboardEvent).code )
+                ? make_closed_state( ST.FOCUSED, state )
+                : state
+        : "Escape" === (event as KeyboardEvent).code
+            ? make_closed_state( ST.FOCUSED, state )
+        : "Enter" === (event as KeyboardEvent).code
+            ? make_closed_state( ST.FOCUSED, select_current( state ) )
+        : "ArrowDown" === (event as KeyboardEvent).code
+            ? select_current( maybe_curent_next( state ) )
+        : "ArrowUp" === (event as KeyboardEvent).code
+            ? select_current( maybe_current_prev( state ) )
+        : state
+    : state
 
 
 const maybeChangeCurrent = (state: State, event: Event): State =>
