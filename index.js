@@ -108,7 +108,7 @@ var OptionsList = function (props) {
 var Value = function (state) {
     return (0, jsx_runtime_1.jsxs)("div", { className: "na-dropdown-value", style: {
             position: "relative"
-        }, children: [state.value.label, (0, jsx_runtime_1.jsx)("select", { tabIndex: "-1", required: state.required, style: {
+        }, children: [state.value.label, (0, jsx_runtime_1.jsx)("select", { tabIndex: -1, required: state.required, style: {
                     position: "absolute",
                     pointerEvents: "none",
                     opacity: "0",

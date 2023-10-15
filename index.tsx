@@ -161,7 +161,7 @@ const Value = (state: ClosedState | OpenedState): HTMLElement =>
     }}>
         {state.value.label}
         <select
-            tabIndex="-1"
+            tabIndex={ -1 }
             required={ state.required }
             style={{
                 position: "absolute",
