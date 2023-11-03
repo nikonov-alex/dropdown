@@ -192,6 +192,7 @@ const render = (state: State): HTMLElement =>
                    (!state.valid ? " invalid" : "")
                }
                data-value={state.value.value ?? state.value.label}
+               data-value-class={ state.value.class }
                tabIndex={0}>
             <Value {...state} />
             {state.type === ST.OPENED
